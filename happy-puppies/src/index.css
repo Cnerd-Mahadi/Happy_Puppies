@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+	.safe-container {
+		@apply container mx-auto px-6;
+	}
+	.both-flex {
+		@apply flex flex-col md:flex-row;
+	}
+
+	.cart-hover {
+		filter: invert(81%) sepia(44%) saturate(5193%) hue-rotate(360deg)
+			brightness(104%) contrast(104%);
+	}
+}

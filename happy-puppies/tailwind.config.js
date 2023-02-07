@@ -2,7 +2,14 @@
 module.exports = {
 	content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/**/*.{html,js}"],
 	theme: {
-		extend: {},
+		extend: {
+			fontFamily: {
+				sans: ["Rubik", "sans-serif"],
+			},
+			// backgroundImage: {
+			// 	hero: "url('/src/images/bg-hero.jpg')",
+			// },
+		},
 	},
 	plugins: [],
 };
