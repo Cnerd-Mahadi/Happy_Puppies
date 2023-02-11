@@ -20,9 +20,14 @@ export const MODAL_ACTION = {
 };
 
 export const DOG_ACTION = {
-	INITIAL: "initial",
 	MINUS_DOG: "minus-dog",
 	ADD_DOG: "add-dog",
+	DOG_ADOPT: "dog-adopt",
 };
 
-export const CART_ACTION = {};
+export const CART_ACTION = {
+	MINUS_DOG: "minus-dog",
+	ADD_DOG: "add-dog",
+	CLEAR_CART: "clear-cart",
+	ZERO_OUT: "zero-out",
+};

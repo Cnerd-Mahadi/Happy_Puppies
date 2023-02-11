@@ -63,24 +63,26 @@ export const NavBar = () => {
 				</div>
 			)}
 			<Modal />
-			<div className="z-5 pr-3 md:hidden">
-				<img
-					src={
-						overlayContext.overlay.menu
-							? "https://cdn-icons-png.flaticon.com/512/1828/1828665.png"
-							: "https://cdn-icons-png.flaticon.com/512/56/56763.png"
-					}
-					alt="menu-mobile"
-					className={`w-5 cursor-pointer duration-200 ${
-						overlayContext.overlay.menu && "rotate-180"
-					}`}
-					onClick={() => {
-						if (overlayContext.overlay.menu)
-							overlayContext.setOverlay({ type: MODAL_ACTION.MENU.OFF });
-						else overlayContext.setOverlay({ type: MODAL_ACTION.MENU.ON });
-					}}
-				/>
-			</div>
+			{useLogContext.value.loggedIn && (
+				<div className="z-5 pr-3 md:hidden">
+					<img
+						src={
+							overlayContext.overlay.menu
+								? "https://cdn-icons-png.flaticon.com/512/1828/1828665.png"
+								: "https://cdn-icons-png.flaticon.com/512/56/56763.png"
+						}
+						alt="menu-mobile"
+						className={`w-5 cursor-pointer duration-200 ${
+							overlayContext.overlay.menu && "rotate-180"
+						}`}
+						onClick={() => {
+							if (overlayContext.overlay.menu)
+								overlayContext.setOverlay({ type: MODAL_ACTION.MENU.OFF });
+							else overlayContext.setOverlay({ type: MODAL_ACTION.MENU.ON });
+						}}
+					/>
+				</div>
+			)}
 		</div>
 	);
 };

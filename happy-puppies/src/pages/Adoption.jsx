@@ -1,15 +1,88 @@
-import React, { useContext } from "react";
-import { CartCue } from "../components/CartCue";
+import { useFormik } from "formik";
+import React, { useContext, useState } from "react";
 import { OverlayContext } from "../hooks/overlay-hook";
-import { MODAL_ACTION } from "../utilities/app-utilities";
+import { DOG_ACTION, MODAL_ACTION } from "../utilities/app-utilities";
+import * as Yup from "yup";
+import { InputElement } from "../components/InputElement";
+import { SelectElement } from "../components/SelectElement";
+import { dogOptionList } from "../utilities/dogOptionList";
+import { DogContext } from "../hooks/dog-hook";
+import { v4 as uuid } from "uuid";
+
+const noImage =
+	"https://st3.depositphotos.com/1156168/15107/v/600/depositphotos_151075440-stock-illustration-cinema-flat-icon.jpg";
+
+const opImage = (value) => {
+	return dogOptionList.find((item) => item.value === value).id;
+};
+
+const formInitials = {
+	name: "",
+	breed: dogOptionList[0].value,
+	speciality: "",
+	amount: 1,
+};
+
+const validation = Yup.object({
+	name: Yup.string().min(3).required("Dog's name required"),
+	breed: Yup.string().required("Breed is not specified"),
+	speciality: Yup.string()
+		.required()
+		.min(6, "Speciality needs to be more specific"),
+});
 
 export const Adoption = () => {
+	const dogContext = useContext(DogContext);
 	const overlayContext = useContext(OverlayContext);
 
+	const onHandleSubmit = (values) => {
+		overlayContext.setOverlay({ type: MODAL_ACTION.FORM.OFF });
+		let gotIt = false;
+		let breedOrigin = dogOptionList.find(
+			(item) => item.value === values.breed
+		).label;
+		let image = dogOptionList.find((item) => item.value === values.breed).id;
+		console.log(breedOrigin);
+		dogContext.dogs.find((item) => {
+			if (
+				item.name === values.name &&
+				item.speciality === values.speciality &&
+				item.breed === breedOrigin
+			) {
+				gotIt = true;
+				dogContext.dogActions({
+					type: DOG_ACTION.DOG_ADOPT,
+					payload: item,
+					amount: values.amount,
+				});
+				console.log("OLD");
+			}
+		});
+		if (!gotIt) {
+			values.id = uuid().slice(0, 8);
+			values.image = image;
+			values.breed = breedOrigin;
+			dogContext.dogActions({
+				type: DOG_ACTION.DOG_ADOPT,
+				payload: values,
+			});
+			console.log("NEW");
+		}
+		console.log(values);
+	};
+
+	const adoptionFormik = useFormik({
+		initialValues: formInitials,
+		onSubmit: onHandleSubmit,
+		validationSchema: validation,
+	});
+
 	return (
-		<form className="flex w-full flex-col">
+		<form
+			className="flex w-full flex-col"
+			onSubmit={adoptionFormik.handleSubmit}>
 			<div className="mb-10 flex items-center justify-between">
-				<h3 className="w-full text-center text-4xl font-bold text-gray-900">
+				<h3 className="w-full text-center text-3xl font-bold text-gray-900 md:text-4xl">
 					Adoption Form
 				</h3>
 				<img
@@ -23,44 +96,49 @@ export const Adoption = () => {
 			</div>
 			<div className="mb-5 flex flex-col items-center space-y-4">
 				<img
-					src="https://st3.depositphotos.com/1156168/15107/v/600/depositphotos_151075440-stock-illustration-cinema-flat-icon.jpg"
-					alt="no-image"
+					src={
+						adoptionFormik.values.breed
+							? require(`./../images/dog-images/${opImage(
+									adoptionFormik.values.breed
+							  )}.jpg`)
+							: noImage
+					}
+					alt="dog-image"
 					className="w-28 rounded-lg border-2 border-gray-400"
 				/>
-				<button className="rounded-full bg-blue-500 px-8 py-2 font-bold text-white">
-					Upload Image
-				</button>
+
+				{adoptionFormik.errors.breed && adoptionFormik.touched.breed && (
+					<p className="text-xs text-red-500">Please select breed for photo</p>
+				)}
 			</div>
-			<div className="mt-7 flex w-full flex-col space-y-8 md:flex-row md:space-y-0 md:space-x-5">
-				<div className="flex flex-row items-center space-x-10 md:w-1/2 md:space-x-0">
-					<label htmlFor="name" className="font-medium text-gray-700 md:w-1/3">
-						Name:
-					</label>
-					<input
-						type="text"
-						className="w-3/5 rounded-lg bg-white py-1 px-4 shadow-md md:w-2/3"
-					/>
-				</div>
-				<div className="flex flex-row items-center space-x-10 md:w-1/2 md:space-x-0">
-					<label htmlFor="name" className="font-medium text-gray-700 md:w-1/3">
-						Breed:
-					</label>
-					<input
-						type="text"
-						className="w-3/5 rounded-lg bg-white py-1 px-4 shadow-md md:w-2/3"
-					/>
-				</div>
-			</div>
-			<div className="items-cente mt-8 flex w-full flex-row space-x-3 md:space-x-0">
-				<label htmlFor="name" className="font-medium text-gray-700 md:w-1/6">
-					Speciality:
-				</label>
-				<input
+			<div className="mt-7 flex w-full flex-col space-y-3">
+				<InputElement
 					type="text"
-					className="w-3/5 rounded-lg bg-white py-1 px-4 shadow-md md:w-3/6"
+					placeholder="Enter Dog's Name"
+					label="name"
+					formik={adoptionFormik}
+				/>
+				<InputElement
+					type="number"
+					placeholder="Enter The Amount"
+					label="amount"
+					formik={adoptionFormik}
+				/>
+				<SelectElement
+					label="breed"
+					formik={adoptionFormik}
+					option={dogOptionList}
+				/>
+				<InputElement
+					type="text"
+					placeholder="Enter It's Speciality"
+					label="speciality"
+					formik={adoptionFormik}
 				/>
 			</div>
-			<button className="mx-auto mt-20 rounded-full bg-blue-500 px-14 py-2 font-bold text-white">
+			<button
+				type="submit"
+				className="mx-auto mt-10 rounded-full bg-blue-500 px-14 py-2 font-bold text-white">
 				Donate
 			</button>
 		</form>
