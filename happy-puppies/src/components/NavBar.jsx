@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import { CartContext } from "../hooks/cart-hook";
 import { LogContext } from "../hooks/logged-in-hook";
 import { OverlayContext } from "../hooks/overlay-hook";
 import logo from "../images/logo_dark.png";
@@ -8,6 +9,7 @@ import { LOG_ACTION, MODAL_ACTION } from "../utilities/app-utilities";
 export const NavBar = () => {
 	const useLogContext = useContext(LogContext);
 	const overlayContext = useContext(OverlayContext);
+	const cartContext = useContext(CartContext);
 
 	const handleResize = () => {
 		if (window.matchMedia("(min-width: 768px)").matches) {
@@ -52,12 +54,17 @@ export const NavBar = () => {
 							onClick={() => {
 								overlayContext.setOverlay({ type: MODAL_ACTION.CART.ON });
 							}}
-							className="rounded-full bg-white px-8 py-2 shadow-lg group-hover:bg-gray-800">
+							className="flex flex-row items-center space-x-2 rounded-full bg-white px-8 py-2 shadow-lg group-hover:bg-gray-800">
 							<img
 								src="https://cdn-icons-png.flaticon.com/512/3514/3514491.png"
 								alt="cart"
 								className="group-hover:cart-hover w-5"
 							/>
+							{cartContext.cart.length > 0 && (
+								<p className="hover font-medium text-orange-500 group-hover:text-yellow-400">
+									({cartContext.cart.length})
+								</p>
+							)}
 						</button>
 					</div>
 				</div>

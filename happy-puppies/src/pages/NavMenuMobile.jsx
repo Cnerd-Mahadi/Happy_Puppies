@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { CartContext } from "../hooks/cart-hook";
 import { LogContext } from "../hooks/logged-in-hook";
 import { OverlayContext } from "../hooks/overlay-hook";
 import { LOG_ACTION, MODAL_ACTION } from "../utilities/app-utilities";
@@ -6,6 +7,7 @@ import { LOG_ACTION, MODAL_ACTION } from "../utilities/app-utilities";
 export const NavMenuMobile = () => {
 	const overlayContext = useContext(OverlayContext);
 	const useLogContext = useContext(LogContext);
+	const cartContext = useContext(CartContext);
 	return (
 		<>
 			<div className="fixed top-0 left-0 right-0 bottom-0 bg-black opacity-90 md:hidden"></div>
@@ -21,8 +23,13 @@ export const NavMenuMobile = () => {
 					onClick={() => {
 						overlayContext.setOverlay({ type: MODAL_ACTION.CART.ON });
 					}}
-					className="w-full py-5 text-slate-300 hover:text-orange-500">
-					Go to Cart
+					className="group flex w-full flex-row items-center justify-center space-x-2 py-5 text-slate-300 hover:text-orange-500">
+					<p>Go to Cart</p>
+					{cartContext.cart.length > 0 && (
+						<p className="font-medium text-orange-500">
+							({cartContext.cart.length})
+						</p>
+					)}
 				</button>
 				<button
 					onClick={() => {
