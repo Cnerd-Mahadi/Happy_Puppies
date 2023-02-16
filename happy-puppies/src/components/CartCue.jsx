@@ -1,14 +1,14 @@
 import React from "react";
-import sample from "../images/dog_sample.jpg";
-import { CART_ACTION, DOG_ACTION } from "../utilities/app-utilities";
+import { useDispatch } from "react-redux";
 
 export const CartCue = ({ item, action, dogAction, endLimit }) => {
+	const dispatch = useDispatch();
 	return (
 		<div className="flex w-full flex-row justify-between py-3">
 			<div className="flex w-9/12 flex-row space-x-5">
 				<div>
 					<img
-						src={require(`./../images/dog-images/${item.image}.jpg`)}
+						src={item.imageUrl}
 						alt="sample"
 						className="h-20 w-16 rounded-lg"
 					/>
@@ -25,12 +25,8 @@ export const CartCue = ({ item, action, dogAction, endLimit }) => {
 				<div className="flex flex-row items-center space-x-3">
 					<button
 						onClick={() => {
-							action({
-								type: CART_ACTION.ADD_DOG,
-								payload: item,
-								endLimit: endLimit,
-							});
-							dogAction({ type: DOG_ACTION.MINUS_DOG, payload: item.id });
+							dispatch(action.add_dog({ item: item, endLimit: endLimit }));
+							dispatch(dogAction.minus_dog({ id: item.id }));
 						}}>
 						<img
 							src="https://cdn-icons-png.flaticon.com/512/169/169782.png"
@@ -41,15 +37,10 @@ export const CartCue = ({ item, action, dogAction, endLimit }) => {
 					<p className="font-medium text-zinc-800">{item.amount}</p>
 					<button
 						onClick={() => {
-							action({
-								type: CART_ACTION.MINUS_DOG,
-								payload: item.id,
-							});
-							dogAction({
-								type: DOG_ACTION.ADD_DOG,
-								payload: item,
-								endLimit: item.amount,
-							});
+							dispatch(action.minus_dog({ id: item.id }));
+							dispatch(
+								dogAction.add_dog({ item: item, endLimit: item.amount })
+							);
 						}}>
 						<img
 							src="https://cdn-icons-png.flaticon.com/512/169/169783.png"

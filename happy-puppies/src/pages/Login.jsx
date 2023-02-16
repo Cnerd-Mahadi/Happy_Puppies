@@ -1,10 +1,11 @@
-import React, { useContext } from "react";
-import { LogContext } from "../hooks/logged-in-hook";
-import hero from "../images/bg-hero.jpg";
-import { LOG_ACTION } from "../utilities/app-utilities";
-import * as Yup from "yup";
 import { useFormik } from "formik";
+import React from "react";
+import { useDispatch } from "react-redux/es/hooks/useDispatch";
+import * as Yup from "yup";
 import { LoginInputElement } from "../components/LoginInputElement";
+import hero from "../images/bg-hero.jpg";
+import { logAction } from "../store/loginSlice";
+import { LOG_VALUE } from "../utilities/app-utilities";
 
 const formInitials = {
 	name: "",
@@ -17,12 +18,10 @@ const validation = Yup.object({
 });
 
 export const Login = () => {
-	const useLogContext = useContext(LogContext);
-
+	const dispatch = useDispatch();
 	const onHandleSubmit = (values) => {
-		console.log(values);
-		localStorage.setItem(LOG_ACTION.LOG_VALUE, true);
-		useLogContext.action.logDispatch({ type: LOG_ACTION.LOG_IN });
+		localStorage.setItem(LOG_VALUE, true);
+		dispatch(logAction.login());
 	};
 
 	const loginFormik = useFormik({

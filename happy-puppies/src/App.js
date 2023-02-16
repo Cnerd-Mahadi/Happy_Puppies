@@ -1,22 +1,14 @@
-import { LoggedInProvider } from "./hooks/logged-in-hook";
-import { OverLayProvider } from "./hooks/overlay-hook";
+import { Provider } from "react-redux";
 import { Hero } from "./pages/Hero";
-import { DogProvider } from "./hooks/dog-hook";
-import { CartProvider } from "./hooks/cart-hook";
+import { store } from "./store/store";
 
 function App() {
 	return (
-		<LoggedInProvider>
-			<OverLayProvider>
-				<DogProvider>
-					<CartProvider>
-						<div className="App">
-							<Hero />
-						</div>
-					</CartProvider>
-				</DogProvider>
-			</OverLayProvider>
-		</LoggedInProvider>
+		<Provider store={store}>
+			<div className="App">
+				<Hero />
+			</div>
+		</Provider>
 	);
 }
 

@@ -36,3 +36,6 @@
 // 			value.split(".").pop() === "png")
 // 	);
 // }),
+
+// Image source hardcoded
+// {require(`./../images/dog-images/${item.image}.jpg`)}

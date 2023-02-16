@@ -33,10 +33,13 @@ export const SelectElement = ({ option, label, formik }) => {
 				className={`rounded-lg border ${
 					touch && error ? "border-red-600" : "border-gray-400"
 				} w-2/3 bg-white py-2 px-4 text-xs font-normal focus:outline-none md:w-full`}>
-				{option.map((item, index) => {
+				<option key="open" value="">
+					Please choose the breed
+				</option>
+				{option.map((item) => {
 					return (
-						<option key={index} value={item.value}>
-							{item.label}
+						<option key={item.id} value={item.breed}>
+							{item.breed}
 						</option>
 					);
 				})}

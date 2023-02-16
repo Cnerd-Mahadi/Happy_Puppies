@@ -1,19 +1,21 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { CartContext } from "../hooks/cart-hook";
-import { LogContext } from "../hooks/logged-in-hook";
-import { OverlayContext } from "../hooks/overlay-hook";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux/es/hooks/useDispatch";
+import { useSelector } from "react-redux/es/hooks/useSelector";
 import logo from "../images/logo_dark.png";
 import { Modal } from "../pages/Modal";
-import { LOG_ACTION, MODAL_ACTION } from "../utilities/app-utilities";
+import { logAction } from "../store/loginSlice";
+import { overlayAction } from "../store/overlaySlice";
+import { LOG_VALUE } from "../utilities/app-utilities";
 
 export const NavBar = () => {
-	const useLogContext = useContext(LogContext);
-	const overlayContext = useContext(OverlayContext);
-	const cartContext = useContext(CartContext);
+	const dispatch = useDispatch();
+	const loggedIn = useSelector((state) => state.login);
+	const overlay = useSelector((state) => state.overlay);
+	const cart = useSelector((state) => state.cart);
 
 	const handleResize = () => {
 		if (window.matchMedia("(min-width: 768px)").matches) {
-			overlayContext.setOverlay({ type: MODAL_ACTION.MENU.OFF });
+			dispatch(overlayAction.menu_off());
 		}
 	};
 
@@ -28,23 +30,23 @@ export const NavBar = () => {
 		<div className="flex flex-row items-center justify-between pt-10 pb-5 md:px-6">
 			<div
 				className={`${
-					overlayContext.overlay.menu && "z-5"
+					overlay.menu && "z-5"
 				} rounded-full bg-white px-6 py-2 shadow-lg`}>
 				<img src={logo} alt="logo" className="w-32" />
 			</div>
-			{useLogContext.value.loggedIn && (
+			{loggedIn && (
 				<div className="hidden flex-row items-center space-x-10 md:flex">
 					<button
 						onClick={() => {
-							overlayContext.setOverlay({ type: MODAL_ACTION.FORM.ON });
+							dispatch(overlayAction.form_on());
 						}}
 						className="text-gray-600 hover:text-orange-500">
 						Donate
 					</button>
 					<button
 						onClick={() => {
-							localStorage.removeItem(LOG_ACTION.LOG_VALUE);
-							useLogContext.action.logDispatch({ type: LOG_ACTION.LOG_OUT });
+							localStorage.removeItem(LOG_VALUE);
+							dispatch(logAction.logout());
 						}}
 						className="text-gray-600 hover:text-orange-500">
 						LogOut
@@ -52,7 +54,7 @@ export const NavBar = () => {
 					<div className="group">
 						<button
 							onClick={() => {
-								overlayContext.setOverlay({ type: MODAL_ACTION.CART.ON });
+								dispatch(overlayAction.cart_on());
 							}}
 							className="flex flex-row items-center space-x-2 rounded-full bg-white px-8 py-2 shadow-lg group-hover:bg-gray-800">
 							<img
@@ -60,9 +62,9 @@ export const NavBar = () => {
 								alt="cart"
 								className="group-hover:cart-hover w-5"
 							/>
-							{cartContext.cart.length > 0 && (
+							{cart.length > 0 && (
 								<p className="hover font-medium text-orange-500 group-hover:text-yellow-400">
-									({cartContext.cart.length})
+									({cart.length})
 								</p>
 							)}
 						</button>
@@ -70,22 +72,21 @@ export const NavBar = () => {
 				</div>
 			)}
 			<Modal />
-			{useLogContext.value.loggedIn && (
+			{loggedIn && (
 				<div className="z-5 pr-3 md:hidden">
 					<img
 						src={
-							overlayContext.overlay.menu
+							overlay.menu
 								? "https://cdn-icons-png.flaticon.com/512/1828/1828665.png"
 								: "https://cdn-icons-png.flaticon.com/512/56/56763.png"
 						}
 						alt="menu-mobile"
 						className={`w-5 cursor-pointer duration-200 ${
-							overlayContext.overlay.menu && "rotate-180"
+							overlay.menu && "rotate-180"
 						}`}
 						onClick={() => {
-							if (overlayContext.overlay.menu)
-								overlayContext.setOverlay({ type: MODAL_ACTION.MENU.OFF });
-							else overlayContext.setOverlay({ type: MODAL_ACTION.MENU.ON });
+							if (overlay.menu) dispatch(overlayAction.menu_off());
+							else dispatch(overlayAction.menu_on());
 						}}
 					/>
 				</div>

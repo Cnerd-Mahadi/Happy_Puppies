@@ -1,15 +1,15 @@
 import React, { useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { CartCue } from "../components/CartCue";
-import { CartContext } from "../hooks/cart-hook";
-import { DogContext } from "../hooks/dog-hook";
-import { OverlayContext } from "../hooks/overlay-hook";
+import { cartAction } from "../store/cartSlice";
+import { dogAction } from "../store/dogSlice";
+import { overlayAction } from "../store/overlaySlice";
 import { CART_ACTION, MODAL_ACTION } from "../utilities/app-utilities";
 
 export const Cart = () => {
-	const overlayContext = useContext(OverlayContext);
-	const dogContext = useContext(DogContext);
-	const cartContext = useContext(CartContext);
-	const cart = cartContext.cart;
+	const dispatch = useDispatch();
+	const cart = useSelector((state) => state.cart);
+	const dogs = useSelector((state) => state.dogs);
 
 	return (
 		<>
@@ -26,11 +26,9 @@ export const Cart = () => {
 									<CartCue
 										key={item.id}
 										item={item}
-										action={cartContext.cartActions}
-										dogAction={dogContext.dogActions}
-										endLimit={
-											dogContext.dogs.find((dog) => dog.id === item.id).amount
-										}
+										action={cartAction}
+										dogAction={dogAction}
+										endLimit={dogs.find((dog) => dog.id === item.id).amount}
 									/>
 								);
 							})}
@@ -38,20 +36,16 @@ export const Cart = () => {
 						<div className="flex flex-row justify-center space-x-10 py-16 md:space-x-20">
 							<button
 								onClick={() => {
-									overlayContext.setOverlay({ type: MODAL_ACTION.CART.OFF });
-									cartContext.cartActions({
-										type: CART_ACTION.CLEAR_CART,
-									});
+									dispatch(overlayAction.cart_off());
+									dispatch(cartAction.clear_cart());
 								}}
 								className="rounded-lg bg-blue-600 px-8 py-2 font-bold text-white hover:bg-blue-400">
 								Order
 							</button>
 							<button
 								onClick={() => {
-									overlayContext.setOverlay({ type: MODAL_ACTION.CART.OFF });
-									cartContext.cartActions({
-										type: CART_ACTION.ZERO_OUT,
-									});
+									dispatch(overlayAction.cart_off());
+									dispatch(cartAction.zero_out());
 								}}
 								className="rounded-lg bg-blue-600 px-8 py-2 font-bold text-white hover:bg-blue-400">
 								Cancel

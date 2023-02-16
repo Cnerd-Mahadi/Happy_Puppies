@@ -1,6 +1,4 @@
-import React, { useContext } from "react";
-import { OverlayContext } from "../hooks/overlay-hook";
-import { MODAL_ACTION } from "../utilities/app-utilities";
+import React from "react";
 import { Adoption } from "./Adoption";
 
 export const Form = () => {

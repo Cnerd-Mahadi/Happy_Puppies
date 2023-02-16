@@ -1,19 +1,15 @@
-import React, { useContext } from "react";
-import { DogContext } from "../hooks/dog-hook";
-import { CART_ACTION, DOG_ACTION } from "../utilities/app-utilities";
+import React from "react";
+import { useDispatch } from "react-redux";
 
 export const DogCard = ({ item, action, cart }) => {
+	const dispatch = useDispatch();
 	return (
 		<div className="flex flex-col items-start rounded-lg bg-slate-900 p-6 shadow-xl">
 			<div className="flex w-full flex-row items-center justify-between">
 				<button
 					onClick={() => {
-						action({ type: DOG_ACTION.MINUS_DOG, payload: item.id });
-						cart({
-							type: CART_ACTION.ADD_DOG,
-							payload: item,
-							endLimit: item.amount,
-						});
+						dispatch(action.minus_dog({ id: item.id }));
+						dispatch(cart.add_dog({ item: item, endLimit: item.amount }));
 					}}
 					className="flex flex-row items-center space-x-2 rounded-full bg-slate-700 px-4 py-2 text-white hover:bg-slate-800">
 					<img
@@ -32,7 +28,7 @@ export const DogCard = ({ item, action, cart }) => {
 			<div className="mt-8 flex w-full flex-row space-x-5">
 				<div className=" w-20 md:h-32 md:w-36">
 					<img
-						src={require(`./../images/dog-images/${item.image}.jpg`)}
+						src={item.imageUrl}
 						alt="sample"
 						className="h-1/2 w-full rounded-l-lg md:h-24 md:w-2/3"
 					/>

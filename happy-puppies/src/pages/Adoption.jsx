@@ -1,24 +1,19 @@
 import { useFormik } from "formik";
-import React, { useContext, useState } from "react";
-import { OverlayContext } from "../hooks/overlay-hook";
-import { DOG_ACTION, MODAL_ACTION } from "../utilities/app-utilities";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { v4 as uuid } from "uuid";
 import * as Yup from "yup";
 import { InputElement } from "../components/InputElement";
 import { SelectElement } from "../components/SelectElement";
-import { dogOptionList } from "../utilities/dogOptionList";
-import { DogContext } from "../hooks/dog-hook";
-import { v4 as uuid } from "uuid";
+import { dogAction } from "../store/dogSlice";
+import { overlayAction } from "../store/overlaySlice";
 
 const noImage =
 	"https://st3.depositphotos.com/1156168/15107/v/600/depositphotos_151075440-stock-illustration-cinema-flat-icon.jpg";
 
-const opImage = (value) => {
-	return dogOptionList.find((item) => item.value === value).id;
-};
-
 const formInitials = {
 	name: "",
-	breed: dogOptionList[0].value,
+	breed: "",
 	speciality: "",
 	amount: 1,
 };
@@ -32,41 +27,32 @@ const validation = Yup.object({
 });
 
 export const Adoption = () => {
-	const dogContext = useContext(DogContext);
-	const overlayContext = useContext(OverlayContext);
+	const dispatch = useDispatch();
+	const dogs = useSelector((state) => state.dogs);
+
+	const opImage = (value) => {
+		return dogs.find((item) => item.breed === value);
+	};
+
+	console.log(dogs);
 
 	const onHandleSubmit = (values) => {
-		overlayContext.setOverlay({ type: MODAL_ACTION.FORM.OFF });
-		let gotIt = false;
-		let breedOrigin = dogOptionList.find(
-			(item) => item.value === values.breed
-		).label;
-		let image = dogOptionList.find((item) => item.value === values.breed).id;
-		console.log(breedOrigin);
-		dogContext.dogs.find((item) => {
-			if (
+		dispatch(overlayAction.form_off());
+		const originalItem = dogs.find((item) => item.breed === values.breed);
+		const oldItem = dogs.find(
+			(item) =>
 				item.name === values.name &&
 				item.speciality === values.speciality &&
-				item.breed === breedOrigin
-			) {
-				gotIt = true;
-				dogContext.dogActions({
-					type: DOG_ACTION.DOG_ADOPT,
-					payload: item,
-					amount: values.amount,
-				});
-				console.log("OLD");
-			}
-		});
-		if (!gotIt) {
+				item.breed === originalItem.breed
+		);
+
+		if (oldItem)
+			dispatch(dogAction.adopt_dog({ item: oldItem, amount: values.amount }));
+		else {
 			values.id = uuid().slice(0, 8);
-			values.image = image;
-			values.breed = breedOrigin;
-			dogContext.dogActions({
-				type: DOG_ACTION.DOG_ADOPT,
-				payload: values,
-			});
-			console.log("NEW");
+			values.imageUrl = originalItem.imageUrl;
+			values.breed = originalItem.breed;
+			dispatch(dogAction.adopt_dog({ item: values }));
 		}
 		console.log(values);
 	};
@@ -87,7 +73,7 @@ export const Adoption = () => {
 				</h3>
 				<img
 					onClick={() => {
-						overlayContext.setOverlay({ type: MODAL_ACTION.FORM.OFF });
+						dispatch(overlayAction.form_off());
 					}}
 					src="https://cdn-icons-png.flaticon.com/512/1008/1008968.png"
 					alt="cross-form"
@@ -98,12 +84,10 @@ export const Adoption = () => {
 				<img
 					src={
 						adoptionFormik.values.breed
-							? require(`./../images/dog-images/${opImage(
-									adoptionFormik.values.breed
-							  )}.jpg`)
+							? opImage(adoptionFormik.values.breed).imageUrl
 							: noImage
 					}
-					alt="dog-image"
+					alt="dog-pic"
 					className="w-28 rounded-lg border-2 border-gray-400"
 				/>
 
@@ -124,11 +108,7 @@ export const Adoption = () => {
 					label="amount"
 					formik={adoptionFormik}
 				/>
-				<SelectElement
-					label="breed"
-					formik={adoptionFormik}
-					option={dogOptionList}
-				/>
+				<SelectElement label="breed" formik={adoptionFormik} option={dogs} />
 				<InputElement
 					type="text"
 					placeholder="Enter It's Speciality"
